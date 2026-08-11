@@ -230,7 +230,7 @@ table {
   width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0;
   min-width: 900px;
 }
-.c-num  { width: 32px; }
+.c-chk  { width: 30px; }
 .c-fund { width: 180px; }
 .c-type { width: 90px; }
 .c-style { width: 80px; }
@@ -318,6 +318,54 @@ td.num { text-align: right; }
 
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; right: 16px; background: #1a3c6e; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 9999; opacity: 0; transition: opacity .3s; pointer-events: none; }
+
+/* ── Compare checkboxes ── */
+.chk-cell { text-align: center; }
+input.row-chk, input.card-chk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); vertical-align: middle; }
+.card-title-row { display: flex; align-items: flex-start; gap: 6px; }
+.card-title-row input.card-chk { margin-top: 3px; flex-shrink: 0; }
+
+/* ── Compare bar ── */
+#compare-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 300;
+  background: var(--primary); color: #fff; padding: 10px 16px;
+  display: none; align-items: center; justify-content: space-between; gap: 10px;
+  box-shadow: 0 -2px 10px rgba(0,0,0,.2);
+}
+#compare-bar.show { display: flex; }
+.compare-bar-text { font-size: 13px; font-weight: 600; }
+.compare-bar-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.compare-btn { padding: 6px 14px; border-radius: 20px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.compare-btn-primary { background: #fff; color: var(--primary); }
+.compare-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.compare-btn-secondary { background: rgba(255,255,255,.15); color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
+
+/* ── Compare modal ── */
+#compare-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9997; }
+#compare-modal {
+  display: none; position: fixed; z-index: 9998; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  background: #fff; border-radius: 14px; max-width: 95vw; width: 900px; max-height: 85vh; overflow: auto;
+  box-shadow: 0 12px 48px rgba(0,0,0,.3);
+}
+#compare-backdrop.show, #compare-modal.show { display: block; }
+.compare-header {
+  position: sticky; top: 0; background: var(--primary); color: #fff; padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 15px; z-index: 2;
+}
+.compare-close { cursor: pointer; background: none; border: none; color: #fff; font-size: 20px; line-height: 1; padding: 4px; }
+.compare-table-wrap { padding: 16px; overflow-x: auto; }
+.compare-table { border-collapse: collapse; width: 100%; min-width: 480px; }
+.compare-table th, .compare-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12px; text-align: left; vertical-align: top; }
+.compare-table th.compare-fund-col { text-align: center; min-width: 150px; }
+.compare-table td.compare-metric-label { font-weight: 700; color: var(--muted); white-space: nowrap; }
+.compare-table td.compare-val { text-align: center; }
+.compare-remove-btn { margin-top: 6px; font-size: 10px; color: #e74c3c; background: none; border: 1px solid #e74c3c; border-radius: 10px; padding: 2px 8px; cursor: pointer; }
+
+@media (max-width: 720px) {
+  #compare-bar { padding: 10px 12px; }
+  .compare-bar-text { font-size: 12px; }
+  #compare-modal { width: 95vw; max-height: 90vh; }
+}
 
 /* ── Responsive ── */
 @media (max-width: 720px) {
@@ -484,13 +532,13 @@ td.num { text-align: right; }
 <div class="table-wrap">
   <table id="main-table">
     <colgroup>
-      <col class="c-num"><col class="c-fund"><col class="c-type"><col class="c-style"><col class="c-cls">
+      <col class="c-chk"><col class="c-fund"><col class="c-type"><col class="c-style"><col class="c-cls">
       <col class="c-nav"><col class="c-pct"><col class="c-pct"><col class="c-pct">
       <col class="c-pct"><col class="c-pct"><col class="c-mom">
     </colgroup>
     <thead>
       <tr>
-        <th>#</th>
+        <th title="Select to compare">✓</th>
         <th class="sortable" data-sort="fund" onclick="setSort('fund')">Fund Code<span class="sort-icon"></span></th>
         <th>Type</th>
         <th>Style</th>
@@ -516,6 +564,25 @@ td.num { text-align: right; }
 </div>
 
 <div id="toast"></div>
+
+<!-- Compare bar -->
+<div id="compare-bar">
+  <span class="compare-bar-text"><span id="compare-count">0</span> funds selected (max <span id="compare-max"></span>)</span>
+  <div class="compare-bar-actions">
+    <button class="compare-btn compare-btn-secondary" onclick="clearCompare()">Clear</button>
+    <button class="compare-btn compare-btn-primary" id="compare-open-btn" onclick="openCompare()">Compare</button>
+  </div>
+</div>
+
+<!-- Compare modal -->
+<div id="compare-backdrop" onclick="closeCompare()"></div>
+<div id="compare-modal">
+  <div class="compare-header">
+    <span>Compare Funds</span>
+    <button class="compare-close" onclick="closeCompare()">&times;</button>
+  </div>
+  <div class="compare-table-wrap" id="compare-table-wrap"></div>
+</div>
 
 <!-- Momentum tooltip -->
 <div id="mom-backdrop" onclick="hideMomTip()"></div>
@@ -872,6 +939,104 @@ let allFunds = [], filtered = [], listenersOk = false;
 let selCls = new Set(), selMom = new Set(), selHL = new Set(), selFH = new Set(), selType = new Set(), selStyle = new Set();
 let sortCol = null, sortDir = 1, prioritySorted = false;
 
+// ── Compare selection ───────────────────────────────────────────
+const MAX_COMPARE = 4;
+let selectedIds = new Set();
+let toastTimer = null;
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+
+function escAttr(s) {
+  return esc(s).replace(/"/g, '&quot;');
+}
+
+function toggleCompare(id, checked) {
+  if (checked) {
+    if (selectedIds.size >= MAX_COMPARE) {
+      showToast(`เลือกเปรียบเทียบได้สูงสุด ${MAX_COMPARE} กองทุน`);
+      renderTable(); renderCards();
+      return;
+    }
+    selectedIds.add(id);
+  } else {
+    selectedIds.delete(id);
+  }
+  updateCompareBar();
+}
+
+function updateCompareBar() {
+  const bar = document.getElementById('compare-bar');
+  document.getElementById('compare-count').textContent = selectedIds.size;
+  document.getElementById('compare-max').textContent = MAX_COMPARE;
+  bar.classList.toggle('show', selectedIds.size > 0);
+  document.getElementById('compare-open-btn').disabled = selectedIds.size < 2;
+}
+
+function clearCompare() {
+  selectedIds.clear();
+  renderTable(); renderCards();
+  updateCompareBar();
+}
+
+function removeFromCompare(id) {
+  selectedIds.delete(id);
+  renderTable(); renderCards();
+  updateCompareBar();
+  if (selectedIds.size < 2) { closeCompare(); return; }
+  openCompare();
+}
+
+function openCompare() {
+  if (selectedIds.size < 2) return;
+  const funds = allFunds.filter(f => selectedIds.has(f.id));
+  renderCompareTable(funds);
+  document.getElementById('compare-modal').classList.add('show');
+  document.getElementById('compare-backdrop').classList.add('show');
+}
+
+function closeCompare() {
+  document.getElementById('compare-modal').classList.remove('show');
+  document.getElementById('compare-backdrop').classList.remove('show');
+}
+
+function renderCompareTable(funds) {
+  const metrics = [
+    { label: 'Type', get: f => fmtType(f.category) },
+    { label: 'Style', get: f => fmtStyle(f.style) },
+    { label: 'Classification', get: f => esc(f.classification) || '—' },
+    { label: 'NAV / Price', get: f => fmtNav(f.nav, f.nav_label) },
+    { label: 'Date', get: f => fmtDate(f.latest_date) },
+    { label: '%1D', get: f => fmtPct(f.pct1d, false) },
+    { label: '%1W', get: f => fmtPct(f.pct1w, false) },
+    { label: '%1M', get: f => fmtPct(f.pct1m, false) },
+    { label: '%3M', get: f => fmtPct(f.pct3m, false) },
+    { label: '%1Y', get: f => fmtPct(f.pct1y, false) },
+    { label: 'Momentum', get: f => fmtMom(f.momentum) }
+  ];
+  let html = '<table class="compare-table"><thead><tr><th></th>';
+  funds.forEach(f => {
+    html += `<th class="compare-fund-col">
+      <div style="font-weight:700;color:var(--primary)">${esc(f.mutual_fund)}</div>
+      ${f.fund_name ? `<div style="font-weight:400;color:var(--muted);font-size:10px;margin-top:2px">${esc(f.fund_name)}</div>` : ''}
+      <button class="compare-remove-btn" data-remove-id="${escAttr(f.id)}">✕ Remove</button>
+    </th>`;
+  });
+  html += '</tr></thead><tbody>';
+  metrics.forEach(m => {
+    html += `<tr><td class="compare-metric-label">${m.label}</td>`;
+    funds.forEach(f => { html += `<td class="compare-val">${m.get(f)}</td>`; });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('compare-table-wrap').innerHTML = html;
+}
+
 // ── Helpers ──────────────────────────────────────────────────
 // Excel-style 3-color scale (red - white - green), saturating at ±PCT_SCALE_MAX%
 const PCT_SCALE_MAX = 5;
@@ -943,7 +1108,7 @@ function fmtType(cat) {
   return `<span class="type-tag ${cls}">${esc(cat)}</span>`;
 }
 function fmtStyle(style) {
-  if (!style) return '<span class="style-tag style-unknown">ไม่มีข้อมูลบนฐานข้อมูล</span>';
+  if (!style) return '<span class="style-tag style-unknown">No Data</span>';
   const cls = style === 'Active' ? 'style-active' : 'style-passive';
   return `<span class="style-tag ${cls}">${esc(style)}</span>`;
 }
@@ -1126,6 +1291,15 @@ function initSS(funds) {
       if (e.target.closest('#mom-tip')) return;
       hideMomTip();
     }, { passive: false });
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('row-chk') || e.target.classList.contains('card-chk')) {
+        toggleCompare(e.target.dataset.id, e.target.checked);
+      }
+    });
+    document.getElementById('compare-table-wrap').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-remove-id]');
+      if (btn) removeFromCompare(btn.dataset.removeId);
+    });
     listenersOk = true;
   }
 }
@@ -1235,18 +1409,18 @@ function render() {
 function renderTable() {
   const tbody = document.getElementById('tbl-body');
   if (!filtered.length) { tbody.innerHTML = `<tr class="state-row"><td colspan="12">No results.</td></tr>`; return; }
-  let html = '', lastCat = null, idx = 0;
+  let html = '', lastCat = null;
   filtered.forEach(f => {
     if (!sortCol && !prioritySorted && f.category !== lastCat) {
       lastCat = f.category;
       html += `<tr class="group-hd"><td colspan="12">▸ ${esc(f.category)}</td></tr>`;
     }
-    idx++;
     const fn = f.fund_name ? `<div class="fund-name" title="${esc(f.fund_name)}">${esc(f.fund_name)}</div>` : '';
     const dateLine = f.latest_date ? `<div class="fund-date">${fmtDate(f.latest_date)}</div>` : '';
     const hlLine = (f.recommend || f.monthly || f.holiday) ? `<div>${f.recommend ? '<span class="hl-badge rec-badge">👍 Recommended</span>' : ''}${f.monthly ? '<span class="hl-badge mon-badge">⭐ Monthly Pick</span>' : ''}${fmtHoliday(f.holiday)}</div>` : '';
+    const chk = selectedIds.has(f.id) ? 'checked' : '';
     html += `<tr>
-      <td style="color:#bbb;font-size:11px">${idx}</td>
+      <td class="chk-cell"><input type="checkbox" class="row-chk" data-id="${escAttr(f.id)}" ${chk}></td>
       <td><div class="fund-code">${esc(f.mutual_fund)}</div>${dateLine}${hlLine}${fn}</td>
       <td>${fmtType(f.category)}</td>
       <td>${fmtStyle(f.style)}</td>
@@ -1273,9 +1447,16 @@ function renderCards() {
     const fn = f.fund_name ? `<div class="card-fn">${esc(f.fund_name)}</div>` : '';
     const momHtml = f.momentum ? `<div style="margin-top:6px">${fmtMom(f.momentum)}</div>` : '';
     const hlHtml = (f.recommend || f.monthly || f.holiday) ? `<div style="margin-top:4px">${f.recommend ? '<span class="hl-badge rec-badge">👍 Recommended</span>' : ''}${f.monthly ? '<span class="hl-badge mon-badge">⭐ Monthly Pick</span>' : ''}${fmtHoliday(f.holiday)}</div>` : '';
+    const chk = selectedIds.has(f.id) ? 'checked' : '';
     html += `<div class="card">
       <div class="card-head">
-        <div class="card-head-left"><div class="card-name">${esc(f.mutual_fund)}</div>${fn}${hlHtml}</div>
+        <div class="card-head-left">
+          <div class="card-title-row">
+            <input type="checkbox" class="card-chk" data-id="${escAttr(f.id)}" ${chk}>
+            <div class="card-name">${esc(f.mutual_fund)}</div>
+          </div>
+          ${fn}${hlHtml}
+        </div>
         <div class="card-head-right">
           ${fmtType(f.category)}
           ${fmtStyle(f.style)}
