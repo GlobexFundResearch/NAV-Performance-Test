@@ -335,8 +335,7 @@ td.num { text-align: right; }
 
 /* ── Compare checkboxes ── */
 .chk-cell { text-align: center; }
-input.row-chk, input.card-chk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); vertical-align: middle; transition: transform .12s ease; }
-input.row-chk:active, input.card-chk:active { transform: scale(1.2); }
+input.row-chk, input.card-chk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); vertical-align: middle; }
 .card-title-row { display: flex; align-items: flex-start; gap: 6px; }
 .card-title-row input.card-chk { margin-top: 3px; flex-shrink: 0; }
 
@@ -588,6 +587,11 @@ tbody tr.compare-row:hover { background: #fff6cc; }
 </div>
 
 <script>
+function debounce(fn, wait) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+}
+
 const MOMENTUM_ACTIONS = {
   Rising: {
     label: 'Rising Momentum', color: '#d97706', bg: '#f59e0b',
@@ -1233,7 +1237,7 @@ function initSS(funds) {
   ssHandles.mfh  = makeSS('ss-mfh-input',  'ss-mfh-dd',  'ss-mfh-search',  'ss-mfh-list',  fhOptions,  onFHChange,  'All Fund Holiday');
 
   if (!listenersOk) {
-    document.getElementById('search').addEventListener('input', render);
+    document.getElementById('search').addEventListener('input', debounce(render, 120));
     function handleDocTap(e) {
       document.querySelectorAll('.ss-dropdown').forEach(d => d.classList.remove('open'));
       document.querySelectorAll('.ss-input').forEach(i => i.classList.remove('open'));
@@ -1368,9 +1372,14 @@ function render() {
   }
 
   document.getElementById('count-pill').textContent = `${filtered.length} funds`;
-  renderTable();
-  renderCards();
+  // Only build the view actually on screen (desktop table vs mobile cards) — building
+  // both on every keystroke/selection was doubling the work for no visible benefit.
+  if (isMobileView()) { renderCards(); } else { renderTable(); }
   updateCompareBar();
+}
+
+function isMobileView() {
+  return window.matchMedia('(max-width: 720px)').matches;
 }
 
 function renderTable() {
@@ -1521,6 +1530,14 @@ updateStickyOffset();
 window.addEventListener('resize', updateStickyOffset);
 window.addEventListener('load', updateStickyOffset);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(updateStickyOffset);
+
+// Re-render only when crossing the mobile/desktop breakpoint, so whichever view
+// (table vs cards) just became visible gets populated instead of staying stale.
+let lastIsMobileView = isMobileView();
+window.addEventListener('resize', debounce(() => {
+  const nowMobile = isMobileView();
+  if (nowMobile !== lastIsMobileView) { lastIsMobileView = nowMobile; render(); }
+}, 150));
 </script>
 <script src="nav_data.js"></script>
 </body>
