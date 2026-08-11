@@ -1292,7 +1292,10 @@ function render() {
   if (btn) btn.style.display = hasFilter ? '' : 'none';
 
   filtered = allFunds.filter(f => {
-    if (compareMode && !selectedIds.has(f.id)) return false;
+    if (compareMode) return selectedIds.has(f.id);
+    // Selected funds stay visible (pinned) no matter what filters/search are active,
+    // so you can keep building a comparison set without losing track of picks already made.
+    if (selectedIds.has(f.id)) return true;
     if (selType.size > 0 && !selType.has(f.category)) return false;
     if (selStyle.size > 0 && !selStyle.has(f.style)) return false;
     if (selCls.size > 0 && !selCls.has(f.classification)) return false;
