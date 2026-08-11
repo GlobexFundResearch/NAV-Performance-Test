@@ -330,10 +330,6 @@ td.num { text-align: right; }
 .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #dde4ef; border-top-color: var(--primary); border-radius: 50%; animation: spin .7s linear infinite; margin-bottom: 10px; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── List refresh fade (search/filter/select changes) ── */
-@keyframes listFadeIn { from { opacity: .35; } to { opacity: 1; } }
-.list-refresh { animation: listFadeIn .22s ease; }
-
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; right: 16px; background: #1a3c6e; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,.3); z-index: 9999; opacity: 0; transition: opacity .3s; pointer-events: none; }
 
@@ -955,14 +951,6 @@ function escAttr(s) {
   return esc(s).replace(/"/g, '&quot;');
 }
 
-// Replay the fade-in animation on a container after its content is replaced
-// (search/filter/select/remove all rebuild the list — this smooths the change)
-function replayFade(el) {
-  el.classList.remove('list-refresh');
-  void el.offsetWidth; // force reflow so the animation restarts
-  el.classList.add('list-refresh');
-}
-
 function toggleCompare(id, checked) {
   if (checked) {
     if (selectedIds.size >= MAX_COMPARE) {
@@ -1415,7 +1403,6 @@ function renderTable() {
     </tr>`;
   });
   tbody.innerHTML = html;
-  replayFade(tbody);
 }
 
 function renderCards() {
@@ -1460,7 +1447,6 @@ function renderCards() {
     </div>`;
   });
   grid.innerHTML = html;
-  replayFade(grid);
 }
 
 function clearFilters() {
