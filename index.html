@@ -1336,6 +1336,9 @@ function render() {
   } else {
     prioritySorted = true;
     filtered.sort((a, b) => {
+      const sa = selectedIds.has(a.id) ? 1 : 0;
+      const sb = selectedIds.has(b.id) ? 1 : 0;
+      if (sa !== sb) return sb - sa;
       const pa = a.recommend ? 2 : a.monthly ? 1 : 0;
       const pb = b.recommend ? 2 : b.monthly ? 1 : 0;
       if (pa !== pb) return pb - pa;
