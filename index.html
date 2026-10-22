@@ -16,6 +16,7 @@
   --bg: #f0f4f8; --surface: #fff; --primary: #1a3c6e; --pri-light: #2557a7;
   --accent: #dbeafe; --border: #d1dce8; --text: #1a2332; --muted: #6b7a8d;
   --header-h: 52px;
+  --tabbar-h: 40px;
 }
 
 body { font-family: 'Prompt', 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; -webkit-tap-highlight-color: transparent; }
@@ -50,7 +51,7 @@ header {
 
 /* ── Filter bar ── */
 .filterbar {
-  position: sticky; top: var(--header-h); z-index: 190;
+  position: sticky; top: calc(var(--header-h) + var(--tabbar-h)); z-index: 190;
   background: var(--surface); border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
@@ -368,6 +369,193 @@ tbody tr.compare-row:hover { background: #fff6cc; }
   .compare-bar-text { font-size: 12px; }
 }
 
+[hidden] { display: none !important; }
+
+/* ── Tabs ── */
+.tabbar {
+  position: sticky; top: var(--header-h); z-index: 195; height: var(--tabbar-h);
+  display: flex; align-items: flex-end; gap: 4px; padding: 0 16px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  border: none; background: none; font: inherit; font-size: 13px; font-weight: 600; color: var(--muted);
+  padding: 0 14px 9px; cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px;
+  transition: color .15s ease, border-color .15s ease; white-space: nowrap;
+}
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--pri-light); }
+body.on-holiday-tab #compare-bar { display: none; }
+.table-wrap, #card-grid { scroll-margin-top: var(--sticky-offset, 132px); }
+
+/* ── Top performers ticker ── */
+.ticker {
+  display: flex; align-items: center; gap: 10px; margin: 12px 16px 0;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 8px 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); overflow: hidden;
+}
+.ticker-label {
+  flex-shrink: 0; background: linear-gradient(135deg, #0f2d5e, #2557a7); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 8px; white-space: nowrap;
+}
+.ticker-viewport {
+  flex: 1; min-width: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+.ticker-track { display: flex; width: max-content; animation: tickerScroll 45s linear infinite; }
+.ticker:hover .ticker-track, .ticker:focus-within .ticker-track { animation-play-state: paused; }
+.ticker-set { display: flex; }
+@keyframes tickerScroll { to { transform: translateX(-50%); } }
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 6px; margin-right: 8px;
+  border: 1px solid var(--border); background: #f8fafc; border-radius: 20px; padding: 4px 10px 4px 4px;
+  font: inherit; font-size: 12px; cursor: pointer; white-space: nowrap;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.ticker-item:hover { border-color: var(--pri-light); background: #fff; }
+.ticker-rank {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--primary); color: #fff;
+  font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+}
+.ticker-rank.top3 { background: #f5c518; color: #5b4500; }
+.ticker-code { font-weight: 700; color: var(--primary); max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.ticker-pct { font-weight: 700; font-size: 11px; padding: 2px 6px; border-radius: 10px; }
+.ticker-pct.up   { background: #dcfce7; color: #15803d; }
+.ticker-pct.down { background: #fee2e2; color: #b91c1c; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .ticker-viewport { overflow-x: auto; }
+}
+
+/* ── Featured cards (Recommended / Monthly Pick) ── */
+.feat-section { margin: 12px 16px 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.feat-group {
+  min-width: 0;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 12px 12px; box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.feat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.feat-title { font-weight: 700; font-size: 14px; color: var(--primary); }
+.feat-count { font-size: 11px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+.feat-arrows { display: flex; gap: 4px; }
+.feat-arrows button {
+  width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); background: #fff;
+  cursor: pointer; color: var(--primary); font-size: 15px; line-height: 1;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.feat-arrows button:hover { border-color: var(--pri-light); background: var(--accent); }
+.feat-row {
+  display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+  padding: 2px 2px 6px; scrollbar-width: thin;
+}
+.feat-card {
+  flex: 0 0 240px; min-width: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 10px; background: #fff;
+  cursor: pointer; transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+.feat-card::before { content: ''; position: absolute; left: 0; top: 0; right: 0; height: 3px; background: var(--pri-light); }
+.feat-card.mon::before { background: #f5c518; }
+.feat-card:hover, .feat-card:focus-visible { box-shadow: 0 6px 18px rgba(26,60,110,.12); transform: translateY(-2px); border-color: #b8ccf0; outline: none; }
+.feat-code { font-weight: 700; color: var(--primary); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.feat-name { font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.feat-tags { display: flex; gap: 4px; margin: 7px 0; flex-wrap: wrap; }
+.feat-nav-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.feat-nav-val { font-weight: 700; font-size: 16px; }
+.feat-nav-lbl { font-size: 10px; color: var(--muted); }
+.feat-perf { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 6px; }
+
+/* ── Fund Holiday calendar tab ── */
+.holiday-page { padding: 14px 16px 40px; }
+.hol-toolbar {
+  display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.hol-search { position: relative; flex: 1; min-width: 220px; max-width: 420px; }
+.hol-search input {
+  width: 100%; padding: 8px 32px; border: 1.5px solid var(--border); border-radius: 20px;
+  font: inherit; font-size: 13px; outline: none; background: #f8fafc; transition: border-color .2s ease;
+}
+.hol-search input:focus { border-color: var(--pri-light); background: #fff; }
+.hol-clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  border: none; background: none; cursor: pointer; color: var(--muted); font-size: 13px; padding: 4px;
+}
+.hol-yearnav { display: flex; align-items: center; gap: 6px; }
+.hol-yearnav button {
+  border: 1.5px solid var(--border); background: #fff; border-radius: 8px; min-width: 32px; height: 32px;
+  cursor: pointer; font: inherit; font-weight: 700; color: var(--primary); transition: border-color .15s ease;
+}
+.hol-yearnav button:hover { border-color: var(--pri-light); }
+.hol-yearnav .hol-today { padding: 0 12px; font-size: 12px; }
+#hol-year { font-weight: 700; font-size: 15px; min-width: 48px; text-align: center; color: var(--primary); }
+.hol-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--muted); margin: 10px 2px; align-items: center; }
+.hol-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -2px; margin-right: 4px; }
+.hol-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 14px; align-items: start; }
+.hol-cal {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+}
+.hol-month { padding: 6px; border-radius: 10px; transition: background-color .2s ease; }
+.hol-month.has-fund-hol { background: #fff7ed; }
+.hol-month-title { text-align: center; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.hol-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.hol-wd { font-size: 10px; color: var(--muted); padding: 4px 0; }
+.hol-day {
+  position: relative; aspect-ratio: 1; border: none; background: none; border-radius: 50%; padding: 0;
+  font: inherit; font-size: 11.5px; color: var(--text); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background-color .15s ease, color .15s ease;
+}
+.hol-day:hover { background: var(--accent); }
+.hol-day.empty { pointer-events: none; }
+.hol-day.weekend { color: #dc2626; }
+.hol-day.past { color: #c5cdd8; }
+.hol-day.today { box-shadow: inset 0 0 0 1.5px #f5c518; font-weight: 700; }
+.hol-day.has-hol::after {
+  content: ''; position: absolute; bottom: 3px; left: 50%; width: 4px; height: 4px; margin-left: -2px;
+  border-radius: 50%; background: #ef4444;
+}
+.hol-day.past.has-hol::after { background: #fca5a5; }
+.hol-day.is-hol { background: #ef4444; color: #fff; font-weight: 700; }
+.hol-day.is-hol.past { background: #fecaca; }
+.hol-day.picked { box-shadow: inset 0 0 0 2px var(--pri-light); }
+.hol-panel {
+  position: sticky; top: calc(var(--header-h) + var(--tabbar-h) + 12px);
+  display: flex; flex-direction: column; gap: 12px;
+  max-height: calc(100vh - var(--header-h) - var(--tabbar-h) - 24px); overflow: auto;
+}
+.hol-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.hol-card-title { font-weight: 700; color: var(--primary); font-size: 14px; word-break: break-word; }
+.hol-card-sub { font-size: 11px; color: var(--muted); margin: 2px 0 8px; }
+.hol-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.hol-list button {
+  width: 100%; text-align: left; border: 1px solid #fecaca; background: #fff7f7; border-radius: 8px;
+  padding: 6px 10px; font: inherit; font-size: 12px; cursor: pointer; color: #b91c1c;
+  display: flex; justify-content: space-between; gap: 8px; transition: background-color .15s ease;
+}
+.hol-list button:hover { background: #fee2e2; }
+.hol-list.past button { background: #f8fafc; border-color: var(--border); color: var(--muted); }
+.hol-list .hol-count { font-weight: 700; }
+.hol-chips { display: flex; flex-wrap: wrap; gap: 5px; max-height: 320px; overflow: auto; }
+.hol-chip {
+  border: 1px solid var(--border); background: #f8fafc; border-radius: 12px; padding: 3px 9px;
+  font: inherit; font-size: 11px; font-weight: 600; color: var(--primary); cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.hol-chip:hover, .hol-chip.on { background: var(--pri-light); color: #fff; border-color: var(--pri-light); }
+.hol-day-filter {
+  width: 100%; padding: 6px 10px; border: 1.5px solid var(--border); border-radius: 16px;
+  font: inherit; font-size: 12px; margin-bottom: 8px; outline: none;
+}
+.hol-day-filter:focus { border-color: var(--pri-light); }
+.hol-empty, .hol-tip { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.hol-card details summary { cursor: pointer; font-size: 12px; color: var(--muted); margin: 8px 0 4px; }
+@media (max-width: 900px) {
+  .hol-layout { grid-template-columns: 1fr; }
+  .hol-panel { position: static; max-height: none; order: -1; }
+}
+
 /* ── Responsive ── */
 @media (max-width: 720px) {
   :root { --header-h: 76px; }
@@ -380,6 +568,16 @@ tbody tr.compare-row:hover { background: #fff6cc; }
   .card-grid { display: flex; }
   .filter-btn { display: block; }
   .filterbar-inner .desktop-only { display: none; }
+  .tabbar { padding: 0 8px; }
+  .tab-btn { padding: 0 10px 9px; font-size: 12.5px; }
+  .ticker, .feat-section { margin: 10px 10px 0; }
+  .ticker-label { padding: 5px 8px; }
+  .feat-card { flex-basis: 78%; }
+  .feat-arrows { display: none; }
+  .holiday-page { padding: 10px; }
+  .hol-cal { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); padding: 10px; gap: 8px; }
+  .hol-day { font-size: 10.5px; }
+  .hol-yearnav { width: 100%; justify-content: space-between; }
 }
 </style>
 </head>
@@ -409,6 +607,44 @@ tbody tr.compare-row:hover { background: #fff6cc; }
     <div style="font-size:10px;opacity:.7;margin-top:2px"><span id="total-funds">—</span> funds · <span id="upd-date">—</span></div>
   </div>
 </header>
+
+<!-- Tabs -->
+<nav class="tabbar" role="tablist">
+  <button class="tab-btn active" role="tab" data-tab="nav" onclick="switchTab('nav')">📊 NAV Report</button>
+  <button class="tab-btn" role="tab" data-tab="holiday" onclick="switchTab('holiday')">📅 Fund Holiday Calendar</button>
+</nav>
+
+<div id="tab-nav">
+
+<!-- Top performers (1M) ticker -->
+<section class="ticker" id="ticker" aria-label="Top 10 funds by 1-month return" hidden>
+  <div class="ticker-label">🏆 Top 10 · %1M</div>
+  <div class="ticker-viewport"><div class="ticker-track" id="ticker-track"></div></div>
+</section>
+
+<!-- Featured cards -->
+<section class="feat-section" id="feat-section">
+  <div class="feat-group" id="feat-rec-group" hidden>
+    <div class="feat-head">
+      <div class="feat-title">👍 Recommended <span class="feat-count" id="feat-rec-count"></span></div>
+      <div class="feat-arrows">
+        <button type="button" aria-label="Scroll left" onclick="scrollFeat('feat-rec', -1)">‹</button>
+        <button type="button" aria-label="Scroll right" onclick="scrollFeat('feat-rec', 1)">›</button>
+      </div>
+    </div>
+    <div class="feat-row" id="feat-rec"></div>
+  </div>
+  <div class="feat-group" id="feat-mon-group" hidden>
+    <div class="feat-head">
+      <div class="feat-title">⭐ Monthly Pick <span class="feat-count" id="feat-mon-count"></span></div>
+      <div class="feat-arrows">
+        <button type="button" aria-label="Scroll left" onclick="scrollFeat('feat-mon', -1)">‹</button>
+        <button type="button" aria-label="Scroll right" onclick="scrollFeat('feat-mon', 1)">›</button>
+      </div>
+    </div>
+    <div class="feat-row" id="feat-mon"></div>
+  </div>
+</section>
 
 <!-- Filter bar -->
 <div class="filterbar">
@@ -562,6 +798,36 @@ tbody tr.compare-row:hover { background: #fff6cc; }
 <!-- Mobile Cards -->
 <div class="card-grid" id="card-grid">
   <div class="state-msg"><div class="spinner"></div><div>Loading…</div></div>
+</div>
+
+</div><!-- /#tab-nav -->
+
+<!-- Fund Holiday calendar tab -->
+<div id="tab-holiday" class="holiday-page" hidden>
+  <div class="hol-toolbar">
+    <div class="hol-search">
+      <span class="search-icon">🔍</span>
+      <input id="hol-search" list="hol-fund-list" placeholder="ค้นหารหัสกองทุน เช่น LHLONGEVITY" autocomplete="off">
+      <button type="button" class="hol-clear" id="hol-clear" onclick="clearHolSearch()" aria-label="Clear" hidden>✕</button>
+      <datalist id="hol-fund-list"></datalist>
+    </div>
+    <div class="hol-yearnav">
+      <button type="button" onclick="changeHolYear(-1)" aria-label="Previous year">‹</button>
+      <span id="hol-year">—</span>
+      <button type="button" onclick="changeHolYear(1)" aria-label="Next year">›</button>
+      <button type="button" class="hol-today" onclick="goHolToday()">วันนี้</button>
+    </div>
+  </div>
+  <div class="hol-legend">
+    <span><i style="background:#ef4444"></i>วันหยุดของกองทุนที่เลือก</span>
+    <span><i style="background:#fff;box-shadow:inset 0 0 0 2px #ef4444;width:6px;height:6px"></i>มีกองทุนหยุด (คลิกเพื่อดูรายชื่อ)</span>
+    <span><i style="box-shadow:inset 0 0 0 1.5px #f5c518"></i>วันนี้</span>
+    <span id="hol-range"></span>
+  </div>
+  <div class="hol-layout">
+    <div class="hol-cal" id="hol-cal"></div>
+    <aside class="hol-panel" id="hol-panel"></aside>
+  </div>
 </div>
 
 <div id="toast"></div>
@@ -764,6 +1030,7 @@ function fmtThm(thm) {
 
 // ── Fund Holiday (loaded live from Fundholiday.xlsx — no code changes needed monthly) ──
 let FUND_HOLIDAYS = {};
+let HOL_BY_DATE = {};
 let HOLIDAY_TODAY_STR = '', HOLIDAY_NEXT_STR = '', HOLIDAY_WEEK_START_STR = '', HOLIDAY_WEEK_END_STR = '';
 let HOLIDAY_NEXTWEEK_START_STR = '', HOLIDAY_NEXTWEEK_END_STR = '';
 function ymd(d) {
@@ -860,6 +1127,12 @@ async function loadFundHolidays() {
     });
     FUND_HOLIDAYS = map;
   } catch { FUND_HOLIDAYS = {}; /* Fundholiday.xlsx not uploaded yet — badges simply won't show */ }
+  // Reverse index for the calendar tab: date -> fund codes closed that day
+  HOL_BY_DATE = {};
+  for (const [code, dates] of Object.entries(FUND_HOLIDAYS)) {
+    FUND_HOLIDAYS[code] = [...new Set(dates)].sort();
+    FUND_HOLIDAYS[code].forEach(d => (HOL_BY_DATE[d] = HOL_BY_DATE[d] || []).push(code));
+  }
 }
 function getHolidayCaution(code) {
   if (!code) return null;
@@ -1511,20 +1784,309 @@ async function load() {
 
     initSS(allFunds);
     render();
+    renderTopPerformers();
+    renderFeatureCards();
+    initHolidayData();
+    if (currentTab === 'holiday') renderHolidayCal();
 
   } catch (e) {
     document.getElementById('maintenance-overlay').style.display = 'flex';
   }
 }
 
-load();
+// ── Tabs ──────────────────────────────────────────────────────
+let currentTab = 'nav';
+function switchTab(tab) {
+  if (tab !== 'nav' && tab !== 'holiday') tab = 'nav';
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const on = b.dataset.tab === tab;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on);
+  });
+  document.getElementById('tab-nav').hidden = tab !== 'nav';
+  document.getElementById('tab-holiday').hidden = tab !== 'holiday';
+  document.body.classList.toggle('on-holiday-tab', tab === 'holiday');
+  history.replaceState(null, '', tab === 'holiday' ? '#holiday' : location.pathname + location.search);
+  if (tab === 'holiday') {
+    renderHolidayCal();
+  } else {
+    updateStickyOffset();
+    if (allFunds.length) render();
+  }
+  window.scrollTo(0, 0);
+}
 
-// ── Sticky table header offset (header + filterbar height can vary by content/font) ──
+// Jump from a ticker item / featured card to that fund in the main list
+function focusFund(code) {
+  if (currentTab !== 'nav') switchTab('nav');
+  document.getElementById('search').value = code;
+  render();
+  const target = isMobileView() ? document.getElementById('card-grid') : document.querySelector('.table-wrap');
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Top performers ticker (top 10 by %1M) ────────────────────
+function renderTopPerformers() {
+  const top = allFunds.filter(f => f.pct1m != null).sort((a, b) => b.pct1m - a.pct1m).slice(0, 10);
+  const section = document.getElementById('ticker');
+  if (!top.length) { section.hidden = true; return; }
+  const items = top.map((f, i) => `<button type="button" class="ticker-item" data-focus="${escAttr(f.mutual_fund)}" title="${escAttr(f.fund_name || '')}">
+      <span class="ticker-rank${i < 3 ? ' top3' : ''}">${i + 1}</span>
+      <span class="ticker-code">${esc(f.mutual_fund)}</span>
+      <span class="ticker-pct ${f.pct1m >= 0 ? 'up' : 'down'}">${f.pct1m > 0 ? '+' : ''}${f.pct1m.toFixed(2)}%</span>
+    </button>`).join('');
+  // Two identical sets so the CSS loop (translateX -50%) is seamless; the copy is hidden from keyboard/AT
+  document.getElementById('ticker-track').innerHTML =
+    `<div class="ticker-set">${items}</div><div class="ticker-set" aria-hidden="true">${items.replace(/<button /g, '<button tabindex="-1" ')}</div>`;
+  section.hidden = false;
+}
+
+// ── Featured cards (Recommended / Monthly Pick) ──────────────
+function featCard(f, kind) {
+  const navStr = f.nav != null ? f.nav.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 }) : '—';
+  return `<div class="feat-card ${kind}" role="button" tabindex="0" data-focus="${escAttr(f.mutual_fund)}">
+    <div class="feat-code" title="${escAttr(f.mutual_fund)}">${esc(f.mutual_fund)}</div>
+    <div class="feat-name" title="${escAttr(f.fund_name || '')}">${esc(f.fund_name) || '&nbsp;'}</div>
+    <div class="feat-tags">${fmtType(f.category)}${fmtStyle(f.style)}</div>
+    <div class="feat-nav-row">
+      <div><span class="feat-nav-val">${navStr}</span> <span class="feat-nav-lbl">${esc(f.nav_label)}</span></div>
+      <span class="feat-nav-lbl">${fmtDate(f.latest_date)}</span>
+    </div>
+    <div class="feat-perf">
+      <div class="card-pct"><span class="card-pct-label">1D</span>${fmtPct(f.pct1d, true)}</div>
+      <div class="card-pct"><span class="card-pct-label">1M</span>${fmtPct(f.pct1m, true)}</div>
+      <div class="card-pct"><span class="card-pct-label">1Y</span>${fmtPct(f.pct1y, true)}</div>
+    </div>
+    ${f.momentum ? fmtMom(f.momentum) : ''}
+  </div>`;
+}
+
+function renderFeatureCards() {
+  const byCode = (a, b) => (a.mutual_fund || '').localeCompare(b.mutual_fund || '');
+  const fill = (id, list, kind) => {
+    document.getElementById(id + '-group').hidden = !list.length;
+    document.getElementById(id + '-count').textContent = `(${list.length})`;
+    document.getElementById(id).innerHTML = list.map(f => featCard(f, kind)).join('');
+  };
+  fill('feat-rec', allFunds.filter(f => f.recommend).sort(byCode), 'rec');
+  fill('feat-mon', allFunds.filter(f => f.monthly).sort(byCode), 'mon');
+}
+
+function scrollFeat(id, dir) {
+  const row = document.getElementById(id);
+  row.scrollBy({ left: dir * row.clientWidth * 0.85, behavior: 'smooth' });
+}
+
+// ── Fund Holiday calendar tab ────────────────────────────────
+const TH_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let holYear = new Date().getFullYear(), holFund = null, holDay = null;
+
+function holKey(s) {
+  return String(s || '').replace(/\s*-\s*/g, '-').replace(/\xad/g, '-').trim().toUpperCase();
+}
+function fmtHolLong(ds) {
+  const [y, m, d] = ds.split('-').map(Number);
+  return new Intl.DateTimeFormat('en-GB', { calendar: 'gregory', weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })
+    .format(new Date(Date.UTC(y, m - 1, d)));
+}
+
+function initHolidayData() {
+  const codes = Object.keys(FUND_HOLIDAYS).sort();
+  document.getElementById('hol-fund-list').innerHTML = codes.map(c => `<option value="${escAttr(c)}">`).join('');
+  const dates = Object.keys(HOL_BY_DATE).sort();
+  document.getElementById('hol-range').textContent = dates.length
+    ? `ข้อมูลครอบคลุม ${fmtHolidayDate(dates[0])} – ${fmtHolidayDate(dates[dates.length - 1])} (${codes.length} กองทุน)`
+    : 'ยังไม่มีข้อมูลวันหยุด (อัปโหลด Fund_data/Fundholiday.xlsx)';
+}
+
+function renderHolidayCal() {
+  document.getElementById('hol-year').textContent = holYear;
+  const today = ymd(new Date());
+  const fundDates = holFund ? new Set(FUND_HOLIDAYS[holFund] || []) : null;
+  const pad = n => String(n).padStart(2, '0');
+  let html = '';
+  for (let m = 0; m < 12; m++) {
+    const lead = new Date(holYear, m, 1).getDay();
+    const days = new Date(holYear, m + 1, 0).getDate();
+    let cells = '', monthHasFundHol = false;
+    for (let i = 0; i < lead; i++) cells += '<span class="hol-day empty"></span>';
+    for (let d = 1; d <= days; d++) {
+      const ds = `${holYear}-${pad(m + 1)}-${pad(d)}`;
+      const dow = (lead + d - 1) % 7;
+      const cls = ['hol-day'];
+      let title = '';
+      if (ds < today) cls.push('past');
+      if (dow === 0 || dow === 6) cls.push('weekend');
+      if (ds === today) cls.push('today');
+      if (ds === holDay) cls.push('picked');
+      if (fundDates) {
+        if (fundDates.has(ds)) { cls.push('is-hol'); title = `${holFund} หยุด`; monthHasFundHol = true; }
+      } else if (HOL_BY_DATE[ds]) {
+        cls.push('has-hol'); title = `กองทุนหยุด ${HOL_BY_DATE[ds].length} กอง`;
+      }
+      cells += `<button type="button" class="${cls.join(' ')}" data-date="${ds}"${title ? ` title="${escAttr(title)}"` : ''}>${d}</button>`;
+    }
+    html += `<div class="hol-month${monthHasFundHol ? ' has-fund-hol' : ''}" data-m="${m}">
+      <div class="hol-month-title">${TH_MONTHS[m]} ${holYear}</div>
+      <div class="hol-grid">${WEEKDAYS.map(w => `<span class="hol-wd">${w}</span>`).join('')}${cells}</div>
+    </div>`;
+  }
+  document.getElementById('hol-cal').innerHTML = html;
+  renderHolPanel();
+}
+
+function renderHolPanel() {
+  const today = ymd(new Date());
+  const q = holKey(document.getElementById('hol-search').value);
+  let html = '';
+  if (holFund) {
+    const list = FUND_HOLIDAYS[holFund] || [];
+    const upcoming = list.filter(d => d >= today), past = list.filter(d => d < today).reverse();
+    const li = d => `<li><button type="button" data-jump="${d}">${fmtHolLong(d)}</button></li>`;
+    html += `<div class="hol-card">
+      <div class="hol-card-title">📌 ${esc(holFund)}</div>
+      <div class="hol-card-sub">วันหยุดทั้งหมด ${list.length} วัน · กำลังจะมาถึง ${upcoming.length} วัน</div>
+      <ul class="hol-list">${upcoming.map(li).join('') || '<li class="hol-empty">ไม่มีวันหยุดที่กำลังจะมาถึงในข้อมูลปัจจุบัน</li>'}</ul>
+      ${past.length ? `<details><summary>วันหยุดที่ผ่านมา (${past.length})</summary><ul class="hol-list past">${past.map(li).join('')}</ul></details>` : ''}
+    </div>`;
+  } else if (q) {
+    const matches = Object.keys(FUND_HOLIDAYS).filter(k => k.includes(q)).sort().slice(0, 40);
+    html += `<div class="hol-card">
+      <div class="hol-card-title">ผลการค้นหา "${esc(q)}"</div>
+      <div class="hol-card-sub">${matches.length ? 'เลือกกองทุนเพื่อดูวันหยุด' : ''}</div>
+      ${matches.length
+        ? `<div class="hol-chips">${matches.map(c => `<button type="button" class="hol-chip" data-fund="${escAttr(c)}">${esc(c)}</button>`).join('')}</div>`
+        : '<div class="hol-empty">ไม่พบกองทุนนี้ในข้อมูลวันหยุด</div>'}
+    </div>`;
+  } else {
+    const dates = Object.keys(HOL_BY_DATE).filter(d => d >= today).sort().slice(0, 10);
+    html += `<div class="hol-card">
+      <div class="hol-card-title">วันหยุดกองทุนที่กำลังจะมาถึง</div>
+      <div class="hol-card-sub">พิมพ์รหัสกองทุนเพื่อดูวันหยุด หรือคลิกวันที่บนปฏิทินเพื่อดูกองทุนที่หยุด</div>
+      ${dates.length
+        ? `<ul class="hol-list">${dates.map(d => `<li><button type="button" data-jump="${d}"><span>${fmtHolLong(d)}</span><span class="hol-count">${HOL_BY_DATE[d].length} กอง</span></button></li>`).join('')}</ul>`
+        : '<div class="hol-empty">ยังไม่มีข้อมูลวันหยุดที่กำลังจะมาถึง — อัปเดตไฟล์ Fund_data/Fundholiday.xlsx</div>'}
+    </div>`;
+  }
+  if (holDay) {
+    const funds = (HOL_BY_DATE[holDay] || []).slice().sort();
+    html += `<div class="hol-card">
+      <div class="hol-card-title">📅 ${fmtHolLong(holDay)}</div>
+      <div class="hol-card-sub">กองทุนที่หยุด ${funds.length} กอง</div>
+      ${funds.length
+        ? `${funds.length > 12 ? '<input class="hol-day-filter" placeholder="กรองรหัสกองทุน…" autocomplete="off">' : ''}
+           <div class="hol-chips">${funds.map(c => `<button type="button" class="hol-chip${c === holFund ? ' on' : ''}" data-fund="${escAttr(c)}">${esc(c)}</button>`).join('')}</div>`
+        : '<div class="hol-empty">ไม่มีกองทุนหยุดในวันนี้</div>'}
+    </div>`;
+  }
+  document.getElementById('hol-panel').innerHTML = html;
+}
+
+function selectHolFund(code) {
+  holFund = code;
+  holDay = null;
+  document.getElementById('hol-search').value = code;
+  document.getElementById('hol-clear').hidden = false;
+  // If this fund has nothing in the year on screen, jump to the year of its next (or latest) holiday
+  const list = FUND_HOLIDAYS[code] || [];
+  if (list.length && !list.some(d => d.startsWith(holYear + '-'))) {
+    const today = ymd(new Date());
+    holYear = Number((list.find(d => d >= today) || list[list.length - 1]).slice(0, 4));
+  }
+  renderHolidayCal();
+  const first = list.find(d => d.startsWith(holYear + '-'));
+  if (first) scrollToHolMonth(Number(first.slice(5, 7)) - 1);
+}
+
+function scrollToHolMonth(m) {
+  const el = document.querySelector(`.hol-month[data-m="${m}"]`);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function jumpToHolDay(ds) {
+  holDay = ds;
+  holYear = Number(ds.slice(0, 4));
+  renderHolidayCal();
+  scrollToHolMonth(Number(ds.slice(5, 7)) - 1);
+}
+
+function clearHolSearch() {
+  document.getElementById('hol-search').value = '';
+  document.getElementById('hol-clear').hidden = true;
+  holFund = null;
+  renderHolidayCal();
+}
+function changeHolYear(delta) { holYear += delta; renderHolidayCal(); }
+function goHolToday() {
+  holYear = new Date().getFullYear();
+  renderHolidayCal();
+  scrollToHolMonth(new Date().getMonth());
+}
+
+// One-time listeners for the ticker, featured cards and calendar (all use delegation)
+(function setupFeatureUI() {
+  document.getElementById('ticker-track').addEventListener('click', e => {
+    const b = e.target.closest('[data-focus]');
+    if (b) focusFund(b.dataset.focus);
+  });
+  const feat = document.getElementById('feat-section');
+  feat.addEventListener('click', e => {
+    if (e.target.closest('.mom-badge')) return; // badge opens the momentum tip instead
+    const c = e.target.closest('[data-focus]');
+    if (c) focusFund(c.dataset.focus);
+  });
+  feat.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const c = e.target.closest('[data-focus]');
+    if (c) { e.preventDefault(); focusFund(c.dataset.focus); }
+  });
+
+  const search = document.getElementById('hol-search');
+  search.addEventListener('input', debounce(() => {
+    const k = holKey(search.value);
+    document.getElementById('hol-clear').hidden = !search.value;
+    if (k && FUND_HOLIDAYS[k]) { if (k !== holFund) selectHolFund(k); return; }
+    holFund = null;
+    renderHolidayCal();
+  }, 150));
+
+  document.getElementById('hol-cal').addEventListener('click', e => {
+    const day = e.target.closest('[data-date]');
+    if (!day) return;
+    holDay = holDay === day.dataset.date ? null : day.dataset.date;
+    renderHolidayCal();
+  });
+
+  const panel = document.getElementById('hol-panel');
+  panel.addEventListener('click', e => {
+    const f = e.target.closest('[data-fund]');
+    if (f) { selectHolFund(f.dataset.fund); return; }
+    const j = e.target.closest('[data-jump]');
+    if (j) jumpToHolDay(j.dataset.jump);
+  });
+  // Filter the long "funds closed on this day" chip list in place (no re-render, keeps focus)
+  panel.addEventListener('input', e => {
+    if (!e.target.classList.contains('hol-day-filter')) return;
+    const q = holKey(e.target.value);
+    e.target.nextElementSibling.querySelectorAll('.hol-chip').forEach(c => {
+      c.hidden = !!q && !c.dataset.fund.includes(q);
+    });
+  });
+})();
+
+load();
+if (location.hash === '#holiday') switchTab('holiday');
+
+// ── Sticky table header offset (header + tabs + filterbar height can vary by content/font) ──
 function updateStickyOffset() {
   const header = document.querySelector('header');
+  const tabbar = document.querySelector('.tabbar');
   const filterbar = document.querySelector('.filterbar');
   if (!header || !filterbar) return;
-  document.documentElement.style.setProperty('--sticky-offset', (header.offsetHeight + filterbar.offsetHeight) + 'px');
+  if (!filterbar.offsetHeight) return; // NAV tab hidden — keep the last good value
+  document.documentElement.style.setProperty('--sticky-offset', (header.offsetHeight + (tabbar ? tabbar.offsetHeight : 0) + filterbar.offsetHeight) + 'px');
 }
 updateStickyOffset();
 window.addEventListener('resize', updateStickyOffset);
