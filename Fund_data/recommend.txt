@@ -1,0 +1,55 @@
+# Recommended funds — one fund code per line
+# Lines starting with # are ignored (comments). Blank lines are ignored too.
+# To add a fund: just type its code on a new line.
+# To remove a fund: delete its line (or put a # in front of it).
+# After editing, upload this file to GitHub (same folder as index.html).
+
+LHCYBER-A
+LHCYBER-D
+PRINCIPAL GCLOUD-A
+DAOL-CYBER
+DAOL-CYBERSECURE
+
+KF-SP500M
+KF-SP500MFX
+TLQUANT-GROW-A
+
+ES-FINTECH
+MFTECH
+SCBFINTECH(A)
+
+M-EUBANK
+DAOL-EUROPEBANK
+
+ES-GENOME
+SCBGENOME(A)
+LHLONGEVITY
+
+ES-USBLUECHIP
+ES-USBLUECHIP-UH (Unhedged)
+TOP11USA
+
+DAOL-GTECH
+ES-GTECH
+
+KT-AGRIANDFOOD
+DAOL-AGRI
+
+X-JPTOPTECH
+ASP-JHC
+TOP11JAP
+
+DAOL-EVOSEMI
+SCBSEMI(A)
+A-ASEMI
+LHASIASEMICON
+
+DAOL-AIINFRA
+LHAI-INFRA
+DAOL-SUPERAI
+LHSUPERAI
+LHAI-A
+
+DAOL-DAPP
+LHGBLOCK-A
+LHGBLOCK-D
