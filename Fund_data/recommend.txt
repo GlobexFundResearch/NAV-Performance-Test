@@ -1,0 +1,50 @@
+# Recommended funds — one fund code per line
+# Lines starting with # are ignored (comments). Blank lines are ignored too.
+# To add a fund: just type its code on a new line.
+# To remove a fund: delete its line (or put a # in front of it).
+# After editing, upload this file to GitHub (same folder as index.html).
+
+LHCYBER-A
+LHCYBER-D
+PRINCIPAL GCLOUD-A
+DAOL-CYBERSECURE
+
+KT-FINANCE-A
+LHUSFIN-A
+LHUSFIN-D
+
+LHLONGEVITY
+KKP GHC
+KT-HEALTHCARE-A 
+
+ES-USBLUECHIP
+ES-USBLUECHIP-UH (Unhedged)
+TOP11USA
+
+TLWORLDHD
+ES-LOVE
+KT-WQUALITY-A
+SCBGQUAL(A)
+
+DAOL-PLAY
+LHESPORT-A
+LHESPORT-D
+UHERO
+
+FP SENERGY-A
+LHSOLAR
+MRENEW-A
+
+ES-GINCOME
+
+ES-EG-A
+KF-HEUROPE-A
+KF-EUROPE (Unhedged)
+
+DAOL-USSMALL
+KF-HSMUS
+
+MINDIA
+
+	
+DAOL-JAPANBANK
