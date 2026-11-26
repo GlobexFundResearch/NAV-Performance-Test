@@ -645,6 +645,7 @@ tbody tr.compare-row, tbody tr.compare-row:hover { background: var(--accent-bg);
 .sum-h { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; margin: 0 6px 6px 0; }
 .sum-h .ico { color: var(--sc, var(--accent)); }
 .sum-h .sum-n { font-weight: 400; color: var(--muted); font-size: 11px; }
+.sum-per { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--muted); }
 #sum-gain { --sc: var(--pos); } #sum-loss { --sc: var(--neg); } #sum-rec { --sc: var(--accent); } #sum-mon { --sc: var(--warn); }
 .sum-list { max-height: 158px; overflow-y: auto; padding-right: 6px; scrollbar-width: thin; }
 .sum-row {
@@ -786,7 +787,7 @@ tbody tr.compare-row, tbody tr.compare-row:hover { background: var(--accent-bg);
   .jump-btn .jb-txt, .jump-btn kbd { display: none; }
   .jump-btn { width: 30px; padding: 0; justify-content: center; }
   .card-grid, .table-wrap { display: none !important; }
-  .sum { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 12px 0 0; padding: 0 12px 4px; gap: 10px; scrollbar-width: none; }
+  .sum { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 12px 0 0; padding: 0 12px 4px; scroll-padding-inline: 12px; gap: 10px; scrollbar-width: none; }
   .sum::-webkit-scrollbar { display: none; }
   .sum-tile { flex: 0 0 78%; scroll-snap-align: start; }
   .split { display: block; margin: 12px 12px 96px; }
@@ -825,6 +826,56 @@ tbody tr.compare-row, tbody tr.compare-row:hover { background: var(--accent-bg);
 }
 .reset-btn:hover { background: var(--hover); }
 #clear-btn { display: none !important; }
+
+.sum-tag { margin-left:4px; font-size:9.5px; font-weight:500; color:var(--muted); border:1px solid var(--border); border-radius:4px; padding:0 3px; vertical-align:1px; }
+
+/* ── Radar: fund profile (scores 0–100 vs peers) ── */
+:root { --s1:#2563eb; --s2:#ea580c; --s3:#9333ea; --s4:#0d9488; --s5:#db2777; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s1:#60a5fa; --s2:#fb923c; --s3:#c084fc; --s4:#2dd4bf; --s5:#f472b6; } }
+:root[data-theme="dark"] { --s1:#60a5fa; --s2:#fb923c; --s3:#c084fc; --s4:#2dd4bf; --s5:#f472b6; }
+.rd-svg { display: block; width: 100%; max-width: 320px; height: auto; margin: 4px auto 0; overflow: visible; }
+.rd-ring { fill: none; stroke: var(--border); stroke-width: 1; }
+.rd-ring.mid { stroke: var(--muted); stroke-dasharray: 3 3; }
+.rd-spoke { stroke: var(--border); stroke-width: 1; }
+.rd-lbl { font-size: 11px; font-weight: 500; fill: var(--text-2); font-family: inherit; }
+.rd-tick { font-size: 9px; fill: var(--muted); font-family: inherit; }
+.rd-poly { fill: var(--c, var(--accent)); fill-opacity: .16; stroke: var(--c, var(--accent)); stroke-width: 2; stroke-linejoin: round; transition: opacity .15s, fill-opacity .15s; }
+.rd-poly.multi { fill-opacity: .06; }
+.rd-dot { fill: var(--c, var(--accent)); }
+.rd-g { transition: opacity .15s; }
+.rd-svg.focus .rd-g { opacity: .15; } .rd-svg.focus .rd-g.on { opacity: 1; } .rd-svg.focus .rd-g.on .rd-poly { fill-opacity: .2; }
+.rd-key { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--muted); margin: 2px 0 10px; }
+.rd-key i { width: 16px; border-top: 1.5px dashed var(--muted); }
+.rd-rows { display: grid; gap: 2px; }
+.rd-row { display: grid; grid-template-columns: minmax(0, 1fr) 104px 64px 26px; align-items: center; gap: 8px; font-size: 12.5px; padding: 4px 0; }
+.rd-row-n { color: var(--text-2); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rd-row-raw { text-align: right; color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rd-trk { height: 6px; background: var(--surface-2); border-radius: 3px; position: relative; overflow: hidden; }
+.rd-trk b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--accent); }
+.rd-trk::after { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-strong); }
+.rd-sc { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rd-note { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.45; }
+.rsi-g { margin-top: 14px; }
+.rsi-h { display: flex; justify-content: space-between; align-items: baseline; font-size: 12.5px; margin-bottom: 6px; }
+.rsi-h b { font-weight: 600; } .rsi-h span { color: var(--muted); font-size: 11.5px; }
+.rsi-bar { position: relative; height: 8px; display: grid; grid-template-columns: 30fr 40fr 30fr; gap: 2px; }
+.rsi-bar span { border-radius: 4px; background: var(--surface-2); }
+.rsi-bar span.x { background: color-mix(in srgb, var(--warn) 22%, var(--surface-2)); }
+.rsi-pin { position: absolute; top: -4px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px; background: var(--text); box-shadow: 0 0 0 2px var(--surface); }
+.rsi-ax { display: grid; grid-template-columns: 30fr 40fr 30fr; font-size: 10.5px; color: var(--muted); margin-top: 5px; }
+.rsi-ax span:nth-child(2) { text-align: center; } .rsi-ax span:last-child { text-align: right; }
+.rd-legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+.rd-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 26px; padding: 0 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 11.5px; font-weight: 500; cursor: pointer; color: var(--text); font-family: inherit; }
+.rd-chip i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex-shrink: 0; }
+.rd-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rd-chip.on { border-color: var(--c); background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
+.cmp-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); margin-right: 6px; vertical-align: 1px; }
+.cmp.sc { table-layout: fixed; min-width: 0; }
+.cmp.sc th, .cmp.sc td { padding-left: 4px; padding-right: 4px; }
+.cmp.sc th:first-child, .cmp.sc td:first-child { width: 32%; min-width: 0; max-width: none; white-space: normal; padding-left: 0; text-align: left; color: var(--text-2); font-weight: 500; }
+.cmp.sc th.n { overflow: hidden; text-overflow: ellipsis; }
+.cmp.sc td.n { font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) { .rd-row { grid-template-columns: minmax(0, 1fr) 96px 44px 24px; gap: 6px; } }
 </style>
 </head>
 <body>
@@ -1000,19 +1051,19 @@ tbody tr.compare-row, tbody tr.compare-row:hover { background: var(--accent-bg);
 <!-- Summary: Top gainers | Top losers | Recommended | Monthly Pick -->
 <section class="sum" id="summary">
   <div class="sum-tile" id="sum-mon">
-    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg><span data-i18n="colMon">Monthly Pick</span> <span class="sum-n" id="sum-mon-n"></span></div>
+    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg><span data-i18n="colMon">Monthly Pick</span> <span class="sum-n" id="sum-mon-n"></span><span class="sum-per">%MTD</span></div>
     <div class="sum-list" id="sum-mon-list"></div>
   </div>
   <div class="sum-tile" id="sum-rec">
-    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6L12 16.3 6.6 19.3l1.3-6L3.3 9.2l6.1-.6z"/></svg><span data-i18n="colRec">Recommended</span> <span class="sum-n" id="sum-rec-n"></span></div>
+    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6L12 16.3 6.6 19.3l1.3-6L3.3 9.2l6.1-.6z"/></svg><span data-i18n="colRec">Recommended</span> <span class="sum-n" id="sum-rec-n"></span><span class="sum-per">%MTD</span></div>
     <div class="sum-list" id="sum-rec-list"></div>
   </div>
   <div class="sum-tile" id="sum-gain">
-    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span data-i18n="sumGain">Top gainers · 1M</span></div>
+    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span data-i18n="sumGain">Top gainers</span> <span class="sum-per">%MTD</span></div>
     <div class="sum-list" id="sum-gain-list"></div>
   </div>
   <div class="sum-tile" id="sum-loss">
-    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></svg><span data-i18n="sumLoss">Top losers · 1M</span></div>
+    <div class="sum-h"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M15 17h6v-6"/></svg><span data-i18n="sumLoss">Top losers</span> <span class="sum-per">%MTD</span></div>
     <div class="sum-list" id="sum-loss-list"></div>
   </div>
 </section>
@@ -1157,11 +1208,17 @@ const I18N = {
     holNoUpcomingAll: 'No upcoming holidays yet — upload Fund_data/Fundholiday_MMYYYY.xlsx',
     holCountShort: '{n} funds', holClosedN: '{n} funds closed', holDayFilter: 'Filter fund codes…',
     holNoneClosed: 'No funds closed on this day',
-    sumGain: 'Top gainers · 1M', sumLoss: 'Top losers · 1M', sumNone: 'None right now',
+    sumGain: 'Top gainers', sumLoss: 'Top losers', sumNone: 'None right now',
     jumpFund: 'Jump to fund', cmdkPh: 'Type a fund code or name', cmdkNone: 'No matching funds', cmdkMove: 'to move', cmdkOpen: 'to open',
     sortDefault: 'Default order', sortHigh: 'Return: high to low', sortLow: 'Return: low to high', sortCode: 'Fund code A–Z', sortMom: 'Momentum',
     fdPick: 'Select a fund to see its details', fdReturns: 'Returns', fdNoHol: 'No upcoming holidays in the data',
-    fdOpenCal: 'Open in holiday calendar', fdAdd: 'Add to compare', fdRemove: 'Remove from compare', fdClose: 'Close', reset: 'Reset'
+    fdOpenCal: 'Open in holiday calendar', fdAdd: 'Add to compare', fdRemove: 'Remove from compare', fdClose: 'Close', reset: 'Reset',
+    rdTitle: 'Fund profile', rdVsCls: 'vs {n} funds in {c}', rdVsAll: 'vs all {n} funds',
+    rd1y: 'Return 1Y', rd3m: 'Return 3M', rdSt: 'Return {p}', rdTrend: 'Trend', rdStab: 'Stability', rdRadj: 'Return ÷ risk',
+    rsL1y: '1Y', rsL3m: '3M', rsTrend: 'Trend', rsStab: 'Stability', rsRadj: 'Ret/Risk',
+    rdMedian: 'Peer median (50)', rdVol: 'Vol {v}', rdEma: 'EMA200 {v}', rdNoData: 'No data',
+    rdNote: 'Each score is a percentile from 0 to 100: 70 means better than 70% of peers. Stability is high when volatility is low. Technical data only, not investment advice.',
+    rsiTitle: 'RSI 14', rsiLow: 'Oversold', rsiMid: 'Normal', rsiHigh: 'Overbought', rdScores: 'Scores (0–100)', rdFactor: 'Factor'
   },
   th: {
     title: 'รายงานผลการดำเนินงาน NAV', internal: 'ใช้ภายในเท่านั้น',
@@ -1203,11 +1260,17 @@ const I18N = {
     holNoUpcomingAll: 'ยังไม่มีข้อมูลวันหยุดที่กำลังจะมาถึง — อัปโหลดไฟล์ Fund_data/Fundholiday_MMYYYY.xlsx',
     holCountShort: '{n} กอง', holClosedN: 'กองทุนที่หยุด {n} กอง', holDayFilter: 'กรองรหัสกองทุน…',
     holNoneClosed: 'ไม่มีกองทุนหยุดในวันนี้',
-    sumGain: 'ผลตอบแทนสูงสุด · 1M', sumLoss: 'ผลตอบแทนต่ำสุด · 1M', sumNone: 'ยังไม่มีรายการ',
+    sumGain: 'ผลตอบแทนสูงสุด', sumLoss: 'ผลตอบแทนต่ำสุด', sumNone: 'ยังไม่มีรายการ',
     jumpFund: 'ไปที่กองทุน', cmdkPh: 'พิมพ์รหัสหรือชื่อกองทุน', cmdkNone: 'ไม่พบกองทุน', cmdkMove: 'เลื่อน', cmdkOpen: 'เปิด',
     sortDefault: 'ลำดับเริ่มต้น', sortHigh: 'ผลตอบแทน: มากไปน้อย', sortLow: 'ผลตอบแทน: น้อยไปมาก', sortCode: 'รหัสกองทุน A–Z', sortMom: 'โมเมนตัม',
     fdPick: 'เลือกกองทุนเพื่อดูรายละเอียด', fdReturns: 'ผลตอบแทน', fdNoHol: 'ไม่มีวันหยุดที่กำลังจะมาถึงในข้อมูล',
-    fdOpenCal: 'ดูในปฏิทินวันหยุด', fdAdd: 'เพิ่มเพื่อเปรียบเทียบ', fdRemove: 'นำออกจากการเปรียบเทียบ', fdClose: 'ปิด', reset: 'รีเซ็ต'
+    fdOpenCal: 'ดูในปฏิทินวันหยุด', fdAdd: 'เพิ่มเพื่อเปรียบเทียบ', fdRemove: 'นำออกจากการเปรียบเทียบ', fdClose: 'ปิด', reset: 'รีเซ็ต',
+    rdTitle: 'โปรไฟล์กองทุน', rdVsCls: 'เทียบกับ {n} กองทุนในกลุ่ม {c}', rdVsAll: 'เทียบกับทั้งหมด {n} กองทุน',
+    rd1y: 'ผลตอบแทน 1Y', rd3m: 'ผลตอบแทน 3M', rdSt: 'ผลตอบแทน {p}', rdTrend: 'แนวโน้ม', rdStab: 'ความนิ่ง (ผันผวนต่ำ)', rdRadj: 'ผลตอบแทน ÷ ความเสี่ยง',
+    rsL1y: '1Y', rsL3m: '3M', rsTrend: 'แนวโน้ม', rsStab: 'ความนิ่ง', rsRadj: 'คุ้มเสี่ยง',
+    rdMedian: 'ค่ากลางของกลุ่ม (50)', rdVol: 'ผันผวน {v}', rdEma: 'EMA200 {v}', rdNoData: 'ไม่มีข้อมูล',
+    rdNote: 'คะแนนแต่ละด้านเป็นเปอร์เซ็นไทล์ 0–100 เช่น 70 คือดีกว่า 70% ของกองทุนในกลุ่มเดียวกัน ความนิ่งสูงแปลว่าผันผวนต่ำ ข้อมูลทางเทคนิคเท่านั้น ไม่ใช่คำแนะนำการลงทุน',
+    rsiTitle: 'RSI 14', rsiLow: 'ขายมากเกินไป', rsiMid: 'ปกติ', rsiHigh: 'ซื้อมากเกินไป', rdScores: 'คะแนน (0–100)', rdFactor: 'ด้าน'
   }
 };
 
@@ -1666,7 +1729,7 @@ let sortCol = null, sortDir = 1, prioritySorted = false;
 // ── Compare selection ───────────────────────────────────────────
 // Compare mode filters the same table/card view down to just the selected
 // funds (no separate window) — selecting/deselecting live-updates the list.
-const MAX_COMPARE = 10;
+const MAX_COMPARE = 5;
 let selectedIds = new Set();
 let compareMode = false;
 let toastTimer = null;
@@ -2536,23 +2599,30 @@ function navTxt(v) {
 function fundById(id) { return allFunds.find(f => f.id === id); }
 
 // ── Summary tiles ──
-function sumRow(f, rank, val) {
+function sumRow(f, rank, val, tag) {
   return `<button type="button" class="sum-row" data-pick="${escAttr(f.id)}">
     ${rank ? `<span class="sum-rank">${rank}</span>` : ''}
     <span class="sum-code" title="${escAttr(f.fund_name || '')}">${esc(f.mutual_fund)}</span>
-    <span class="sum-val ${pctCls(val)}">${pctTxt(val)}</span>
+    <span class="sum-val ${pctCls(val)}">${pctTxt(val)}${tag ? `<span class="sum-tag">${tag}</span>` : ''}</span>
   </button>`;
 }
 function renderFeatureCards() {
-  const withM = allFunds.filter(f => f.pct1m != null);
-  const gain = withM.filter(f => f.pct1m > 0).sort((a, b) => b.pct1m - a.pct1m).slice(0, 10);
-  const loss = withM.filter(f => f.pct1m < 0).sort((a, b) => a.pct1m - b.pct1m).slice(0, 10);
+  // Tiles use %MTD (month to date). Per fund: if MTD is missing or 0, use %1M instead
+  // (marked with a small "1M" tag). When MTD arrives, that fund switches back automatically.
+  const hasMtd = f => f.pctmtd != null && Math.abs(f.pctmtd) >= 0.005;
+  const val = f => hasMtd(f) ? f.pctmtd : f.pct1m;
+  const anyMtd = allFunds.some(hasMtd);
+  document.querySelectorAll('#summary .sum-per').forEach(el => { el.textContent = anyMtd ? '%MTD' : '%1M'; });
+  const tag = f => (anyMtd && !hasMtd(f) && f.pct1m != null) ? '1M' : '';
+  const withM = allFunds.filter(f => val(f) != null);
+  const gain = withM.filter(f => val(f) > 0).sort((a, b) => val(b) - val(a)).slice(0, 10);
+  const loss = withM.filter(f => val(f) < 0).sort((a, b) => val(a) - val(b)).slice(0, 10);
   const byCode = (a, b) => (a.mutual_fund || '').localeCompare(b.mutual_fund || '');
   const rec = allFunds.filter(f => f.recommend).sort(byCode);
   const mon = allFunds.filter(f => f.monthly).sort(byCode);
   const fill = (id, list, ranked) => {
     document.getElementById(id).innerHTML = list.length
-      ? list.map((f, i) => sumRow(f, ranked ? i + 1 : 0, f.pct1m)).join('')
+      ? list.map((f, i) => sumRow(f, ranked ? i + 1 : 0, val(f), tag(f))).join('')
       : `<div class="sum-empty">${t('sumNone')}</div>`;
   };
   fill('sum-gain-list', gain, true);
@@ -2665,6 +2735,7 @@ function renderDetail() {
     </div>
     <div class="fd-sec">${t('fdReturns')}</div>
     ${bars}
+    ${radarSection(f)}
     <div class="fd-sec">${t('thMom')} <span class="hint">${t('techOnly')}</span></div>
     ${momHtml}
     <div class="fd-sec">${t('holUpcomingTitle')}</div>
@@ -2676,19 +2747,196 @@ function renderDetail() {
 }
 
 function renderCompareTable() {
-  const list = allFunds.filter(f => selectedIds.has(f.id));
+  const list = [...selectedIds].map(fundById).filter(Boolean);
   const head = `<tr><th>${t('thFund')}</th><th class="n">${t('thNav')}</th>${PERIODS.map(p => `<th class="n">${PER_LBL[p]}</th>`).join('')}<th>${t('thMom')}</th></tr>`;
   const rows = list.map(f => `<tr data-pick="${escAttr(f.id)}">
-      <td><div class="cmp-code">${esc(f.mutual_fund)}</div><div class="cmp-name">${esc(f.fund_name)}</div></td>
+      <td><div class="cmp-code">${radarReady() ? `<span class="cmp-dot" style="--c:var(--s${list.indexOf(f) + 1})"></span>` : ''}${esc(f.mutual_fund)}</div><div class="cmp-name">${esc(f.fund_name)}</div></td>
       <td class="n">${navTxt(f.nav)}</td>
       ${PERIODS.map(p => `<td class="n">${fmtPct(f[p], false)}</td>`).join('')}
       <td>${f.momentum ? `<span class="mom-badge ${momCls(f.momentum)}">${esc(trMom(f.momentum))}</span>` : '—'}</td>
     </tr>`).join('');
   return `<div class="fd-top"><div class="fd-code" style="font-size:18px">${t('comparing', { n: list.length })}</div>
       <button type="button" class="fd-close" onclick="closeDetail()" aria-label="${escAttr(t('fdClose'))}">${ICO_X}</button></div>
-    <div class="cmp-wrap"><table class="cmp"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    ${radarCompare(list)}
+    <div class="fd-sec">${t('fdReturns')}</div>
+    <div class="cmp-wrap" style="margin-top:0"><table class="cmp"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
     <div class="fd-actions"><button type="button" class="fd-btn" onclick="toggleCompareMode()">${t('showAll')}</button></div>`;
 }
+
+
+// ── Radar: 6 scores per fund, each a percentile 0–100 vs peers ──
+// Peers = funds in the same Fund Classification; if that group has fewer than
+// RADAR_MIN_PEERS funds, all funds are used instead.
+const RADAR_MIN_PEERS = 5;
+const RADAR_AXES = ['r1y', 'r3m', 'rst', 'trend', 'stab', 'radj'];
+let RADAR = null, RADAR_SRC = null;
+function rdHasMtd(f) { return f.pctmtd != null && Math.abs(f.pctmtd) >= 0.005; }
+function rdShort(f) { return rdHasMtd(f) ? f.pctmtd : f.pct1m; }
+function rdNum(v) { return typeof v === 'number' && isFinite(v) ? v : null; }
+// Share of values below v (ties count half), 0–100
+function rdPctile(sorted, v) {
+  let lo = 0, hi = sorted.length;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (sorted[m] < v) lo = m + 1; else hi = m; }
+  let eq = lo; while (eq < sorted.length && sorted[eq] === v) eq++;
+  return sorted.length < 2 ? 50 : ((lo + (eq - lo) / 2) / sorted.length) * 100;
+}
+// Old data files have none of the radar fields: hide the radar then
+function radarReady() {
+  return allFunds.some(f => f.vol1y != null || f.rsi14 != null || f.ema200 != null);
+}
+function buildRadar() {
+  RADAR_SRC = allFunds;
+  RADAR = new Map();
+  if (!radarReady()) return;
+  const raw = new Map();
+  allFunds.forEach(f => {
+    const nav = rdNum(f.nav), e50 = rdNum(f.ema50), e200 = rdNum(f.ema200), ml = rdNum(f.macd_line), ms = rdNum(f.macd_signal), vol = rdNum(f.vol1y), r1y = rdNum(f.pct1y);
+    raw.set(f.id, {
+      r1y, r3m: rdNum(f.pct3m), rst: rdNum(rdShort(f)),
+      t50: nav > 0 && e50 > 0 ? nav / e50 - 1 : null,
+      t200: nav > 0 && e200 > 0 ? nav / e200 - 1 : null,
+      // MACD grows with the price, so use it as % of NAV to compare funds fairly
+      tmacd: nav > 0 && ml != null && ms != null ? (ml - ms) / nav : null,
+      vol: vol > 0 ? vol : null,
+      radj: r1y != null && vol > 0 ? r1y / vol : null
+    });
+  });
+  // Trend = average of three percentiles (vs all funds), then ranked vs peers like the other axes
+  const allSorted = k => allFunds.map(f => raw.get(f.id)[k]).filter(v => v != null).sort((a, b) => a - b);
+  const tSorted = { t50: allSorted('t50'), t200: allSorted('t200'), tmacd: allSorted('tmacd') };
+  raw.forEach(r => {
+    const parts = ['t50', 't200', 'tmacd'].filter(k => r[k] != null).map(k => rdPctile(tSorted[k], r[k]));
+    r.trend = parts.length ? parts.reduce((a, b) => a + b, 0) / parts.length : null;
+  });
+  // 1 = higher is better; -1 = lower is better (stability is low volatility)
+  const metrics = { r1y: 1, r3m: 1, rst: 1, trend: 1, stab: -1, radj: 1 };
+  const srcKey = m => m === 'stab' ? 'vol' : m;
+  const sortedFor = (list, m) => list.map(f => raw.get(f.id)[srcKey(m)]).filter(v => v != null).sort((a, b) => a - b);
+  const groups = new Map();
+  allFunds.forEach(f => { const k = f.classification || ''; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(f); });
+  const allLists = {};
+  Object.keys(metrics).forEach(m => { allLists[m] = sortedFor(allFunds, m); });
+  const grpLists = new Map();
+  groups.forEach((list, k) => { const o = {}; Object.keys(metrics).forEach(m => { o[m] = sortedFor(list, m); }); grpLists.set(k, { o, n: list.length }); });
+  allFunds.forEach(f => {
+    const r = raw.get(f.id), g = grpLists.get(f.classification || '');
+    const usePeers = !!(f.classification && g && g.n >= RADAR_MIN_PEERS);
+    const sc = {};
+    Object.entries(metrics).forEach(([m, dir]) => {
+      const v = r[srcKey(m)];
+      if (v == null) { sc[m] = null; return; }
+      const list = usePeers && g.o[m].length >= RADAR_MIN_PEERS ? g.o[m] : allLists[m];
+      const p = rdPctile(list, v);
+      sc[m] = Math.round(dir > 0 ? p : 100 - p);
+    });
+    RADAR.set(f.id, { sc, raw: r, peers: usePeers ? g.n : allFunds.length, byCls: usePeers });
+  });
+}
+function radarOf(f) {
+  if (RADAR_SRC !== allFunds || !RADAR) buildRadar();
+  return RADAR.get(f.id) || null;
+}
+function rdStLabel() { return allFunds.some(rdHasMtd) ? 'MTD' : '1M'; }
+function rdAxisNames(short) {
+  const st = rdStLabel();
+  return short
+    ? [t('rsL1y'), t('rsL3m'), st, t('rsTrend'), t('rsStab'), t('rsRadj')]
+    : [t('rd1y'), t('rd3m'), t('rdSt', { p: st }), t('rdTrend'), t('rdStab'), t('rdRadj')];
+}
+// SVG radar. series = [{ sc, color, id }]
+function radarSvg(series) {
+  const W = 320, H = 268, cx = W / 2, cy = 134, R = 92;
+  const ang = i => (-90 + i * 60) * Math.PI / 180;
+  const pt = (i, v) => [cx + Math.cos(ang(i)) * R * v / 100, cy + Math.sin(ang(i)) * R * v / 100];
+  const xy = ([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`;
+  const ring = v => RADAR_AXES.map((_, i) => xy(pt(i, v))).join(' ');
+  const names = rdAxisNames(true);
+  let g = [25, 50, 75, 100].map(v => `<polygon class="rd-ring${v === 50 ? ' mid' : ''}" points="${ring(v)}"/>`).join('');
+  g += RADAR_AXES.map((_, i) => { const [x, y] = pt(i, 100); return `<line class="rd-spoke" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`; }).join('');
+  g += [50, 100].map(v => `<text class="rd-tick" x="${cx + 4}" y="${(cy - R * v / 100 + 11).toFixed(1)}">${v}</text>`).join('');
+  g += names.map((n, i) => {
+    const [x, y] = pt(i, 116), c = Math.cos(ang(i));
+    const anchor = Math.abs(c) < 0.1 ? 'middle' : c > 0 ? 'start' : 'end';
+    return `<text class="rd-lbl" x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${anchor}">${esc(n)}</text>`;
+  }).join('');
+  const multi = series.length > 1;
+  g += series.map(s => {
+    const pts = RADAR_AXES.map((a, i) => pt(i, s.sc[a] ?? 0));
+    const dots = pts.map((p, i) => `<circle class="rd-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${multi ? 2.5 : 3.5}"><title>${esc(names[i])}: ${s.sc[RADAR_AXES[i]] ?? '—'}</title></circle>`).join('');
+    return `<g class="rd-g" data-rd="${escAttr(s.id)}" style="--c:${s.color}"><polygon class="rd-poly${multi ? ' multi' : ''}" points="${pts.map(xy).join(' ')}"/>${dots}</g>`;
+  }).join('');
+  return `<svg class="rd-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${escAttr(t('rdTitle'))}">${g}</svg>`;
+}
+function rdRawTxt(f, a, r) {
+  const signed = v => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(1)}%`;
+  switch (a) {
+    case 'r1y': return pctTxt(f.pct1y);
+    case 'r3m': return pctTxt(f.pct3m);
+    case 'rst': return pctTxt(rdShort(f)) + (rdHasMtd(f) || rdStLabel() === '1M' ? '' : ' · 1M');
+    case 'trend': return r.t200 == null ? '—' : t('rdEma', { v: signed(r.t200 * 100) });
+    case 'stab': return r.vol == null ? '—' : t('rdVol', { v: r.vol.toFixed(1) + '%' });
+    case 'radj': return r.radj == null ? '—' : r.radj.toFixed(2);
+  }
+  return '';
+}
+function rsiGauge(v) {
+  if (v == null) return '';
+  const st = v < 30 ? 'rsiLow' : v > 70 ? 'rsiHigh' : 'rsiMid';
+  return `<div class="rsi-g">
+    <div class="rsi-h"><b>${t('rsiTitle')}: ${v.toFixed(1)}</b><span>${t(st)}</span></div>
+    <div class="rsi-bar"><span class="x"></span><span></span><span class="x"></span><i class="rsi-pin" style="left:${Math.max(0, Math.min(100, v)).toFixed(1)}%"></i></div>
+    <div class="rsi-ax"><span>${t('rsiLow')} &lt;30</span><span>${t('rsiMid')}</span><span>&gt;70 ${t('rsiHigh')}</span></div>
+  </div>`;
+}
+function radarSection(f) {
+  if (!radarReady()) return '';
+  const rd = radarOf(f);
+  if (!rd) return '';
+  const peers = rd.byCls ? t('rdVsCls', { n: rd.peers, c: trCls(f.classification) }) : t('rdVsAll', { n: rd.peers });
+  const names = rdAxisNames(false);
+  const rows = RADAR_AXES.map((a, i) => {
+    const v = rd.sc[a];
+    return `<div class="rd-row"><span class="rd-row-n" title="${escAttr(names[i])}">${esc(names[i])}</span>
+      <span class="rd-row-raw">${v == null ? t('rdNoData') : rdRawTxt(f, a, rd.raw)}</span>
+      <span class="rd-trk">${v == null ? '' : `<b style="width:${v}%"></b>`}</span>
+      <span class="rd-sc">${v ?? '—'}</span></div>`;
+  }).join('');
+  return `<div class="fd-sec">${t('rdTitle')} <span class="hint">${esc(peers)}</span></div>
+    ${radarSvg([{ sc: rd.sc, color: 'var(--accent)', id: f.id }])}
+    <div class="rd-key"><i></i>${t('rdMedian')}</div>
+    <div class="rd-rows">${rows}</div>
+    ${rsiGauge(rdNum(f.rsi14))}
+    <div class="rd-note">${t('rdNote')}</div>`;
+}
+function radarCompare(list) {
+  if (!radarReady() || !list.length) return '';
+  const series = list.map((f, i) => ({ f, rd: radarOf(f), color: `var(--s${i + 1})`, id: f.id })).filter(s => s.rd);
+  const names = rdAxisNames(false);
+  const head = `<tr><th>${t('rdFactor')}</th>${series.map(s => `<th class="n" title="${escAttr(s.f.mutual_fund)}"><span class="cmp-dot" style="--c:${s.color}"></span>${esc(s.f.mutual_fund.split('/')[0].trim())}</th>`).join('')}</tr>`;
+  const rows = RADAR_AXES.map((a, i) => {
+    const vals = series.map(s => s.rd.sc[a]);
+    const ok = vals.filter(v => v != null);
+    const best = ok.length ? Math.max(...ok) : null;
+    return `<tr><td>${esc(names[i])}</td>${vals.map(v => `<td class="n"${v != null && v === best && series.length > 1 ? ' style="color:var(--pos)"' : ''}>${v ?? '—'}</td>`).join('')}</tr>`;
+  }).join('');
+  return `<div class="fd-sec">${t('rdTitle')} <span class="hint">${t('rdScores')}</span></div>
+    <div class="rd-legend">${series.map(s => `<button type="button" class="rd-chip" data-rdfocus="${escAttr(s.id)}" style="--c:${s.color}"><i></i><span>${esc(s.f.mutual_fund)}</span></button>`).join('')}</div>
+    ${radarSvg(series.map(s => ({ sc: s.rd.sc, color: s.color, id: s.id })))}
+    <div class="rd-key"><i></i>${t('rdMedian')}</div>
+    <div class="cmp-wrap" style="margin-top:4px"><table class="cmp sc"><thead>${head}</thead><tbody>${rows}</tbody></table></div>
+    <div class="rd-note">${t('rdNote')}</div>`;
+}
+// Compare legend: tap a fund to highlight its shape, tap again to show all
+document.addEventListener('click', e => {
+  const chip = e.target.closest('[data-rdfocus]');
+  if (!chip) return;
+  const box = chip.closest('.fd'), svg = box && box.querySelector('.rd-svg');
+  if (!svg) return;
+  const id = chip.dataset.rdfocus, on = !chip.classList.contains('on');
+  box.querySelectorAll('[data-rdfocus]').forEach(c => c.classList.toggle('on', on && c === chip));
+  svg.classList.toggle('focus', on);
+  svg.querySelectorAll('.rd-g').forEach(g => g.classList.toggle('on', on && g.dataset.rd === id));
+});
 
 function openDetail(id) {
   if (id) curId = id;
